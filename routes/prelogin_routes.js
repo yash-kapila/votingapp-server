@@ -44,15 +44,13 @@ router.post('/login', function(req, res){
 });
 
 router.post('/signup', function(req, res) {
-    console.log('inside signup');
     var user = new User({
-        username: req.query.username,
-        password: req.query.password,
-        email: req.query.email
+        username: req.body.params.username,
+        password: req.body.params.password,
+        email: req.body.params.email
     });
     user.addUser(function(err, record){
         if(err) console.log("Inside error of signup: " + err);
-        console.log(record);
         res.json(record);
     })
 })
