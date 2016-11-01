@@ -34,6 +34,10 @@ UserSchema.methods.verifyPassword = function(callback) {
         }, callback);
 };
 
+UserSchema.methods.verifyEmail = function(callback) {
+    return this.model('User').findOne({ email: this.email }, callback);
+};
+
 UserSchema.methods.addUser = function(callback) {
     return this.model('User').create(
         { 
