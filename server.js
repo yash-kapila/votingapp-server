@@ -1,7 +1,11 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser');
 var config = require("./config");
+
+// cookie configuration
+app.use(cookieParser());
 
 var mongoose = require('mongoose');
 mongoose.connect(config.database);

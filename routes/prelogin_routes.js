@@ -2,6 +2,7 @@ var express = require("express");
 var jwt = require('jsonwebtoken');
 var router = express.Router();
 var User = require("../models/Users");
+var Poll = require("../models/Polls");
 var config = require("../config");
 
 router.use(function(req, res, next) {
@@ -86,6 +87,62 @@ router.post('/signup', function(req, res) {
             }
         }
     });
+});
+
+router.get('/getpolldetails', function(req, res){
+    var pollURL = config.url+'/#/polls/'+req.query.url;
+    var poll = new Poll();
+    
+    poll.retrievePollByURL(pollURL, function(err, record){
+        if(err) res.status(500).json("Error while fetching poll");
+        else{
+            var poll = new Poll({
+                _id: record._id
+            });
+            
+            poll.retrieveUsername(function(err, user){
+                if (err) res.status(500).json("Error while fetching poll");
+                else{
+                    res.status(200).json({
+                        success: true,
+                        poll: record,
+                        user: user.username
+                    });
+                }
+            });
+        }
+    });
+});
+
+router.put('/submitvote', function(req, res){
+    var _id = {
+        userID: req.body.params.userID,
+        questionID: req.body.params.questionID,
+        optionID: req.body.params.optionID
+    }
+    var poll = new Poll();
+
+    poll.submitVote(_id, function(err, record){
+        if(err) res.status(500).json("Couldn't count the vote this time");
+        else{
+            var item = record.polls[0].option;
+            for(var i=0;i<item.length;i++){
+                if(item[i]._id == _id.optionID){
+                    item[i].votes++;
+                    break;
+                }                
+            }
+
+            record.save(function(err){
+                if(err) res.status(500).json("Couldn't count the vote this time");
+                res.status(200).json({
+                    success: true,
+                    msg: "Vote has been registered successfully",
+                    poll: record.polls[0]
+                })
+            })
+        }
+    })
 });
 
 // expose router           

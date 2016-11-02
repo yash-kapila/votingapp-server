@@ -22,7 +22,7 @@ router.use(function(req, res, next) {
 });
 
 router.post('/savepoll', function(req, res) {
-    var pollURL = config.url+'/polls/'+req.body.params.question;
+    var pollURL = config.url+'/#/polls/'+req.body.params.question;
     
     var poll = new Poll({
         username: req.body.params.username
@@ -35,7 +35,6 @@ router.post('/savepoll', function(req, res) {
     }
     
     poll.submitPoll(pollQuestion, function(err, record){
-        console.log("SUBMIT POLL: " + JSON.stringify(record));
         if(err) res.status(500).json("Error while fetching record");
         else
             res.status(200).json({
@@ -53,11 +52,10 @@ router.get('/mypolls', function(req, res){
     poll.retrieveUserPolls(function(err, record){
        if(err) res.status(500).json("Error while fetching polls");
        else{
-            console.log(JSON.stringify(record.polls));
-            // res.status(200).json({
-            //     success: true,
-            //     polls: record.polls
-            // });
+            res.status(200).json({
+                success: true,
+                polls: record.polls
+            });
        }
     });    
 });
@@ -65,6 +63,21 @@ router.get('/mypolls', function(req, res){
 router.post('/logout', function(req, res){
     res.clearCookie('voting_jwt');
     res.status(200).json('User logged out successfully');
+});
+
+router.delete('/removepoll', function(req, res){
+    var _id = req.query._id;
+    var poll = new Poll();
+    
+    poll.removePoll(_id, function(err, record){
+        if(err) res.status(500).json("Error while fetching poll");
+        else{
+            res.status(200).json({
+                success: true,
+                message: "Poll removed successfully"
+            })
+        }
+    });
 });
 
 // expose router           
