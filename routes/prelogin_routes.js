@@ -6,7 +6,6 @@ var Poll = require("../models/Polls");
 var config = require("../config");
 
 router.use(function(req, res, next) {
-    console.log('Inside prelogin router use');
     next();
 });
 

@@ -6,7 +6,6 @@ var Poll = require("../models/Polls");
 var User = require("../models/Users");
 
 router.use(function(req, res, next) {
-    console.log('inside post login router use');
     var token = req.cookies.voting_jwt;
     if(token){
         jwt.verify(token, config.secretkey, function(err, decoded) {
@@ -60,11 +59,6 @@ router.get('/mypolls', function(req, res){
     });    
 });
 
-router.post('/logout', function(req, res){
-    res.clearCookie('voting_jwt');
-    res.status(200).json('User logged out successfully');
-});
-
 router.delete('/removepoll', function(req, res){
     var _id = req.query._id;
     var poll = new Poll();
@@ -78,6 +72,11 @@ router.delete('/removepoll', function(req, res){
             })
         }
     });
+});
+
+router.post('/logout', function(req, res){
+    res.clearCookie('voting_jwt');
+    res.status(200).json('User logged out successfully');
 });
 
 // expose router           
